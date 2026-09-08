@@ -171,13 +171,6 @@
       70% { transform: scale(1); }
     }
 
-    .audio-player {
-      width: 100%;
-      margin-bottom: 15px;
-      height: 35px;
-      border-radius: 10px;
-    }
-
     .letter-body {
       color: #e5e7eb;
       font-size: 0.95rem;
@@ -211,11 +204,6 @@
           <path d="M16 28.5 C16 28.5 3 20.5 3 11.5 C3 6.5 7 3.5 11.5 3.5 C14.5 3.5 15.8 5 16 5 C16.2 5 17.5 3.5 20.5 3.5 C25 3.5 29 6.5 29 11.5 C29 20.5 16 28.5 16 28.5 Z" />
         </svg>
       </div>
-
-      <!-- Reproductor con audio compatible y controles por si el navegador lo frena -->
-      <audio id="bgMusic" class="audio-player" controls loop>
-        <source src="https://assets.mixkit.co/music/preview/mixkit-romantic-01-20.mp3" type="audio/mpeg">
-      </audio>
 
       <div class="letter-body">
         <p><strong>💗 Para Alejandra</strong></p>
@@ -304,12 +292,47 @@
     }
     animate();
 
+    // Motor de sonido sintético suave (Web Audio API)
+    let audioCtx;
+    function playMelody() {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 329.63, 293.66]; // C4, E4, G4, C5, A4, F4, E4, D4
+      let index = 0;
+
+      function playNote() {
+        if (!audioCtx) return;
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(notes[index], audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.2);
+
+        index = (index + 1) % notes.length;
+        setTimeout(playNote, 600);
+      }
+
+      playNote();
+    }
+
     function startGalaxy() {
       isStarted = true;
       
-      const music = document.getElementById('bgMusic');
-      if (music) {
-        music.play().catch(e => console.log("Audio play error:", e));
+      // Inicia la música generada nativamente
+      try {
+        playMelody();
+      } catch (e) {
+        console.log("Audio error:", e);
       }
 
       document.getElementById('startScreen').style.opacity = '0';
