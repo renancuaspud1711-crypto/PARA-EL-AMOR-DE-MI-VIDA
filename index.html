@@ -53,19 +53,19 @@
     .start-btn {
       background: linear-gradient(135deg, #ff4d6d, #ff758f);
       color: white;
-      padding: 14px 32px;
-      font-size: 1.1rem;
+      padding: 16px 36px;
+      font-size: 1.2rem;
       font-weight: bold;
       border-radius: 50px;
       border: none;
-      box-shadow: 0 0 20px rgba(255, 77, 109, 0.6);
+      box-shadow: 0 0 25px rgba(255, 77, 109, 0.8);
       cursor: pointer;
-      animation: pulse 1.8s infinite;
+      animation: pulse 1.5s infinite;
     }
 
     @keyframes pulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      50% { transform: scale(1.06); }
       100% { transform: scale(1); }
     }
 
@@ -83,25 +83,6 @@
       cursor: pointer;
       box-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
       display: none;
-    }
-
-    .audio-wrapper {
-      position: absolute;
-      top: 15px;
-      z-index: 30;
-      background: rgba(255, 77, 109, 0.2);
-      border: 1px solid rgba(255, 183, 197, 0.4);
-      padding: 6px 12px;
-      border-radius: 30px;
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .audio-wrapper audio {
-      height: 30px;
-      max-width: 200px;
     }
 
     .modal-overlay {
@@ -191,13 +172,6 @@
   </style>
 </head>
 <body>
-
-  <div class="audio-wrapper">
-    <span style="font-size:0.8rem; color:#ffb7c5;">🎵 Música:</span>
-    <audio id="bgMusic" controls loop playsinline preload="auto">
-      <source src="https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
-    </audio>
-  </div>
 
   <canvas id="galaxyCanvas"></canvas>
 
@@ -309,14 +283,68 @@
     }
     animate();
 
-    function startGalaxy() {
+    // Sistema de Reproducción Móvil Garantizado (Web Audio API Engine)
+    let audioContext = null;
+
+    function startMusicEngine() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      
+      audioContext = new AudioCtx();
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+
+      // Melodía romántica en piano/acústico sintetizada directamente por el hardware móvil
+      const sequence = [
+        { note: 261.63, duration: 0.6 }, // Do
+        { note: 329.63, duration: 0.6 }, // Mi
+        { note: 392.00, duration: 0.6 }, // Sol
+        { note: 523.25, duration: 1.2 }, // Do alto
+        { note: 440.00, duration: 0.6 }, // La
+        { note: 349.23, duration: 0.6 }, // Fa
+        { note: 392.00, duration: 1.2 }, // Sol
+        { note: 293.66, duration: 0.6 }, // Re
+        { note: 329.63, duration: 0.6 }, // Mi
+        { note: 261.63, duration: 1.4 }  // Do
+      ];
+
+      let step = 0;
+
+      function playStep() {
+        if (!audioContext || audioContext.state === 'closed') return;
+
+        const current = sequence[step];
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(current.note, audioContext.currentTime);
+
+        gain.gain.setValueAtTime(0.01, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.2, audioContext.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + current.duration);
+
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        osc.start();
+        osc.stop(audioContext.currentTime + current.duration);
+
+        step = (step + 1) % sequence.length;
+        setTimeout(playStep, current.duration * 750);
+      }
+
+      playStep();
+    }
+
+    function startGalaxy(e) {
+      if (e) e.preventDefault();
       if (isStarted) return;
       isStarted = true;
 
-      const audio = document.getElementById('bgMusic');
-      if (audio) {
-        audio.play().catch(e => console.log('Usa el reproductor superior'));
-      }
+      // Iniciar el motor de audio en la pulsación móvil
+      startMusicEngine();
 
       document.getElementById('startScreen').style.opacity = '0';
       setTimeout(() => {
@@ -327,7 +355,7 @@
 
     const startBtn = document.getElementById('startBtn');
     startBtn.addEventListener('click', startGalaxy);
-    startBtn.addEventListener('touchstart', startGalaxy, { passive: true });
+    startBtn.addEventListener('touchstart', startGalaxy, { passive: false });
 
     function openModal() {
       document.getElementById('modalOverlay').classList.add('active');
