@@ -1,9 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
   <title>Te amo Alita 💗</title>
 
   <style>
@@ -42,6 +42,7 @@
       z-index: 10;
       text-align: center;
       width: 90%;
+      transition: opacity 0.6s ease;
     }
 
     .start-title {
@@ -210,6 +211,25 @@
     .letter-body p {
       margin-bottom: 10px;
     }
+
+    @media (max-width: 480px) {
+      .start-title {
+        font-size: 1.7rem;
+      }
+
+      .start-btn {
+        padding: 14px 28px;
+        font-size: 1rem;
+      }
+
+      .card-modal {
+        max-height: 85vh;
+      }
+
+      .letter-body {
+        font-size: 0.88rem;
+      }
+    }
   </style>
 </head>
 
@@ -217,32 +237,46 @@
 
   <canvas id="galaxyCanvas"></canvas>
 
+  <!-- PANTALLA DE INICIO -->
   <div class="start-screen" id="startScreen">
-    <div class="start-title">Te amo Alita 💗</div>
+
+    <div class="start-title">
+      Te amo Alita 💗
+    </div>
+
     <button class="start-btn" id="startBtn">
       Toca para iniciar ❤️
     </button>
+
   </div>
 
+  <!-- BOTÓN DE CARTA -->
   <button
     class="letter-icon-btn"
     id="letterBtn"
+    type="button"
     onclick="openModal()">
     💌 Abrir carta
   </button>
 
+  <!-- BOTÓN DE MÚSICA -->
   <button
     class="music-control"
     id="musicBtn"
+    type="button"
     onclick="toggleMusic()">
     🔊 Música
   </button>
 
+  <!-- CARTA -->
   <div class="modal-overlay" id="modalOverlay">
 
     <div class="card-modal">
 
-      <button class="close-btn" onclick="closeModal()">
+      <button
+        class="close-btn"
+        type="button"
+        onclick="closeModal()">
         ✕
       </button>
 
@@ -254,15 +288,18 @@
 
         <svg
           class="animated-heart"
-          viewBox="0 0 32 32">
+          viewBox="0 0 32 32"
+          xmlns="http://www.w3.org/2000/svg">
 
-          <path d="M16 28.5
-          C16 28.5 3 20.5 3 11.5
-          C3 6.5 7 3.5 11.5 3.5
-          C14.5 3.5 16 6.5 16 6.5
-          C16 6.5 17.5 3.5 20.5 3.5
-          C25 3.5 29 6.5 29 11.5
-          C29 20.5 16 28.5 16 28.5 Z" />
+          <path d="
+            M16 28.5
+            C16 28.5 3 20.5 3 11.5
+            C3 6.5 7 3.5 11.5 3.5
+            C14.5 3.5 16 6.5 16 6.5
+            C16 6.5 17.5 3.5 20.5 3.5
+            C25 3.5 29 6.5 29 11.5
+            C29 20.5 16 28.5 16 28.5 Z">
+          </path>
 
         </svg>
 
@@ -275,11 +312,11 @@
         </p>
 
         <p>
-          MI princesa hermosa te quiero agradecerte por todos los momentos
-          bonitos que hemos compartido juntos Gracias por cada
+          Mi princesa hermosa, te quiero agradecer por todos los momentos
+          bonitos que hemos compartido juntos. Gracias por cada
           sonrisa, cada conversación, cada abrazo, cada aventura
           y por todas esas pequeñas cosas que, aunque quizás
-          parezcan simples para mí significan muchísimo.
+          parezcan simples, para mí significan muchísimo.
         </p>
 
         <p>
@@ -310,7 +347,9 @@
 
         <p>
           Te quiero muchísimo y espero seguir escribiendo nuestra
-          historia junto a ti, asta de viejitos segir y aun despues de la muerte volvernos a encontrar y juntos volver a reir. 🧸💗✨
+          historia junto a ti, hasta de viejitos seguir y, aun después
+          de la muerte, volvernos a encontrar y juntos volver a reír.
+          🧸💗✨
         </p>
 
       </div>
@@ -352,14 +391,16 @@
         16 * Math.pow(Math.sin(t), 3);
 
       const y =
-        -(13 * Math.cos(t)
-        - 5 * Math.cos(2 * t)
-        - 2 * Math.cos(3 * t)
-        - Math.cos(4 * t));
+        -(
+          13 * Math.cos(t)
+          - 5 * Math.cos(2 * t)
+          - 2 * Math.cos(3 * t)
+          - Math.cos(4 * t)
+        );
 
       return {
-        x,
-        y
+        x: x,
+        y: y
       };
     }
 
@@ -398,9 +439,7 @@
           Math.random() * 1.6 + 1;
 
         this.color =
-          `hsl(${Math.random() * 40 + 330},
-          100%,
-          ${Math.random() * 40 + 60}%)`;
+          `hsl(${Math.random() * 40 + 330}, 100%, ${Math.random() * 40 + 60}%)`;
 
         this.speed =
           Math.random() * 0.04 + 0.02;
@@ -412,12 +451,10 @@
         if (active) {
 
           this.x +=
-            (this.baseX - this.x) *
-            this.speed;
+            (this.baseX - this.x) * this.speed;
 
           this.y +=
-            (this.baseY - this.y) *
-            this.speed;
+            (this.baseY - this.y) * this.speed;
 
         } else {
 
@@ -488,9 +525,7 @@
 
       });
 
-      requestAnimationFrame(
-        animate
-      );
+      requestAnimationFrame(animate);
 
     }
 
@@ -504,8 +539,6 @@
     let audioContext = null;
 
     let musicStarted = false;
-
-    let musicStep = 0;
 
     let musicTimer = null;
 
@@ -560,7 +593,9 @@
       when
     ) {
 
-      if (!audioContext) return;
+      if (!audioContext) {
+        return;
+      }
 
       const osc =
         audioContext.createOscillator();
@@ -568,14 +603,12 @@
       const gain =
         audioContext.createGain();
 
-
       osc.type = type;
 
       osc.frequency.setValueAtTime(
         frequency,
         when
       );
-
 
       gain.gain.setValueAtTime(
         0.0001,
@@ -592,13 +625,11 @@
         when + duration
       );
 
-
       osc.connect(gain);
 
       gain.connect(
         audioContext.destination
       );
-
 
       osc.start(when);
 
@@ -618,7 +649,6 @@
         return;
       }
 
-
       const now =
         audioContext.currentTime;
 
@@ -626,7 +656,7 @@
         now + 0.03;
 
 
-      /* Melodía principal */
+      /* MELODÍA PRINCIPAL */
 
       romanticMelody.forEach(
         ([note, duration]) => {
@@ -639,7 +669,6 @@
             time
           );
 
-
           playTone(
             note * 2,
             duration * 0.7,
@@ -648,18 +677,16 @@
             time
           );
 
-
           time += duration;
 
         }
       );
 
 
-      /* Acompañamiento */
+      /* ACOMPAÑAMIENTO */
 
       let bassTime =
         now + 0.03;
-
 
       romanticBass.forEach(
         ([note, duration]) => {
@@ -672,16 +699,18 @@
             bassTime
           );
 
-
           bassTime += duration;
 
         }
       );
 
 
+      const phraseDuration =
+        (time - now) * 1000;
+
       musicTimer = setTimeout(
         playRomanticPhrase,
-        (time - now) * 1000 + 250
+        phraseDuration + 250
       );
 
     }
@@ -693,17 +722,15 @@
         window.AudioContext ||
         window.webkitAudioContext;
 
-
       if (!AudioCtx) {
 
         alert(
           "Tu navegador no permite reproducir audio."
         );
 
-        return;
+        return false;
 
       }
-
 
       if (!audioContext) {
 
@@ -712,65 +739,57 @@
 
       }
 
-
       if (
-        audioContext.state ===
-        "suspended"
+        audioContext.state === "suspended"
       ) {
 
         await audioContext.resume();
 
       }
 
-
-      if (musicStarted) return;
-
+      if (musicStarted) {
+        return true;
+      }
 
       musicStarted = true;
 
-      musicStep = 0;
-
       playRomanticPhrase();
+
+      return true;
 
     }
 
 
-    function toggleMusic() {
+    async function toggleMusic() {
 
       const musicBtn =
-        document.getElementById(
-          "musicBtn"
-        );
+        document.getElementById("musicBtn");
 
+      if (!audioContext) {
 
-      if (!musicStarted) {
+        const started =
+          await startMusic();
 
-        startMusic();
-
-        musicBtn.textContent =
-          "🔊 Música";
+        if (started) {
+          musicBtn.textContent = "🔊 Música";
+        }
 
         return;
 
       }
 
-
       if (
-        audioContext &&
-        audioContext.state ===
-        "running"
+        audioContext.state === "running"
       ) {
 
-        audioContext.suspend();
+        await audioContext.suspend();
 
         musicBtn.textContent =
           "🔇 Música";
 
-      }
+      } else {
 
-      else if (audioContext) {
-
-        audioContext.resume();
+        await audioContext.resume();
 
         musicBtn.textContent =
           "🔊 Música";
@@ -784,42 +803,37 @@
        INICIO
        ========================================== */
 
-    function startGalaxy(e) {
+    async function startGalaxy(e) {
 
       if (e) {
         e.preventDefault();
       }
 
-
-      if (isStarted) return;
-
+      if (isStarted) {
+        return;
+      }
 
       isStarted = true;
 
+      /*
+        Inicia la música mediante la interacción
+        del usuario para evitar el bloqueo del navegador.
+      */
 
-      /* Inicia música con la interacción
-         del usuario para evitar bloqueo
-         del navegador */
+      await startMusic();
 
-      startMusic();
+      const startScreen =
+        document.getElementById("startScreen");
 
-
-      document.getElementById(
-        "startScreen"
-      ).style.opacity = "0";
-
+      startScreen.style.opacity = "0";
 
       setTimeout(() => {
 
-        document.getElementById(
-          "startScreen"
-        ).style.display = "none";
-
+        startScreen.style.display = "none";
 
         document.getElementById(
           "letterBtn"
         ).style.display = "block";
-
 
         document.getElementById(
           "musicBtn"
@@ -831,23 +845,11 @@
 
 
     const startBtn =
-      document.getElementById(
-        "startBtn"
-      );
-
+      document.getElementById("startBtn");
 
     startBtn.addEventListener(
       "click",
       startGalaxy
-    );
-
-
-    startBtn.addEventListener(
-      "touchstart",
-      startGalaxy,
-      {
-        passive: false
-      }
     );
 
 
@@ -872,8 +874,23 @@
 
     }
 
+
+    /* Cerrar la carta al tocar fuera de ella */
+
+    document.getElementById(
+      "modalOverlay"
+    ).addEventListener(
+      "click",
+      function(e) {
+
+        if (e.target === this) {
+          closeModal();
+        }
+
+      }
+    );
+
   </script>
 
 </body>
 </html>
-```
