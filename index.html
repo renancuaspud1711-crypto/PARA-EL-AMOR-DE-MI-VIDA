@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
   <title>Te amo Alita 💗</title>
-
   <style>
     * {
       box-sizing: border-box;
@@ -15,17 +13,14 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
+    html, body {
       background: #000;
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100vh;
-      height: 100dvh; /* Soporte para alto real en navegadores móviles */
+      height: 100dvh;
       width: 100vw;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       position: relative;
     }
 
@@ -40,6 +35,9 @@
 
     .start-screen {
       position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       z-index: 10;
       text-align: center;
       width: 90%;
@@ -47,7 +45,7 @@
     }
 
     .start-title {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 800;
       color: #ffb7c5;
       text-shadow: 0 0 15px rgba(255, 183, 197, 0.8);
@@ -57,8 +55,8 @@
     .start-btn {
       background: linear-gradient(135deg, #ff4d6d, #ff758f);
       color: white;
-      padding: 16px 36px;
-      font-size: 1.2rem;
+      padding: 14px 30px;
+      font-size: 1.1rem;
       font-weight: bold;
       border-radius: 50px;
       border: none;
@@ -73,42 +71,42 @@
       100% { transform: scale(1); }
     }
 
-    /* CONTENEDOR DE BOTONES INFERIORES */
+    /* CONTENEDOR FLOTANTE ELEVADO */
     .bottom-controls {
-      position: absolute;
-      bottom: max(20px, env(safe-area-inset-bottom));
+      position: fixed;
+      bottom: 80px !important; /* Fuerza una elevación por encima de los botones virtuales */
       left: 0;
       width: 100%;
-      z-index: 10;
+      z-index: 999;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
-      padding: 0 15px;
+      gap: 10px;
+      padding: 0 10px;
     }
 
     .letter-icon-btn, .music-control {
-      background: rgba(255, 77, 109, 0.9);
+      background: rgba(255, 77, 109, 0.95);
       color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 10px 18px;
       border-radius: 50px;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
+      box-shadow: 0 0 15px rgba(255, 77, 109, 0.8);
       display: none;
       white-space: nowrap;
     }
 
     .modal-overlay {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 20;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 1000;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -130,7 +128,7 @@
       padding: 20px;
       max-width: 380px;
       width: 100%;
-      max-height: 80vh;
+      max-height: 75vh;
       overflow-y: auto;
       box-shadow: 0 0 25px rgba(255, 77, 109, 0.3);
       position: relative;
@@ -149,7 +147,7 @@
 
     .modal-title {
       color: #ff4d6d;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
       margin-bottom: 10px;
       text-align: center;
@@ -161,8 +159,8 @@
     }
 
     .animated-heart {
-      width: 45px;
-      height: 45px;
+      width: 40px;
+      height: 40px;
       fill: #ff4d6d;
       animation: heartbeat 1.2s infinite ease-in-out;
     }
@@ -177,37 +175,13 @@
 
     .letter-body {
       color: #e5e7eb;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       line-height: 1.5;
       text-align: justify;
     }
 
     .letter-body p {
       margin-bottom: 10px;
-    }
-
-    @media (max-width: 480px) {
-      .start-title {
-        font-size: 1.7rem;
-      }
-
-      .start-btn {
-        padding: 14px 28px;
-        font-size: 1rem;
-      }
-
-      .card-modal {
-        max-height: 85vh;
-      }
-
-      .letter-body {
-        font-size: 0.88rem;
-      }
-
-      .letter-icon-btn, .music-control {
-        padding: 10px 16px;
-        font-size: 0.85rem;
-      }
     }
   </style>
 </head>
@@ -216,101 +190,53 @@
 
   <canvas id="galaxyCanvas"></canvas>
 
-  <!-- PANTALLA DE INICIO -->
   <div class="start-screen" id="startScreen">
-    <div class="start-title">
-      Te amo Alita 💗
-    </div>
-    <button class="start-btn" id="startBtn">
-      Toca para iniciar ❤️
-    </button>
+    <div class="start-title">Te amo Alita 💗</div>
+    <button class="start-btn" id="startBtn">Toca para iniciar ❤️</button>
   </div>
 
-  <!-- CONTENEDOR DE BOTONES -->
   <div class="bottom-controls">
-    <button class="music-control" id="musicBtn" type="button" onclick="toggleMusic()">
-      🔊 Música
-    </button>
-    <button class="letter-icon-btn" id="letterBtn" type="button" onclick="openModal()">
-      💌 Abrir carta
-    </button>
+    <button class="music-control" id="musicBtn" type="button" onclick="toggleMusic()">🔊 Música</button>
+    <button class="letter-icon-btn" id="letterBtn" type="button" onclick="openModal()">💌 Abrir carta</button>
   </div>
 
-  <!-- CARTA -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="card-modal">
       <button class="close-btn" type="button" onclick="closeModal()">✕</button>
-
-      <div class="modal-title">
-        Te amo Alita ❤️
-      </div>
-
+      <div class="modal-title">Te amo Alita ❤️</div>
+      
       <div class="heart-header">
-        <svg class="animated-heart" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <svg class="animated-heart" viewBox="0 0 32 32">
           <path d="M16 28.5 C16 28.5 3 20.5 3 11.5 C3 6.5 7 3.5 11.5 3.5 C14.5 3.5 16 6.5 16 6.5 C16 6.5 17.5 3.5 20.5 3.5 C25 3.5 29 6.5 29 11.5 C29 20.5 16 28.5 16 28.5 Z"></path>
         </svg>
       </div>
 
       <div class="letter-body">
         <p><strong>💗 Para Alejandra</strong></p>
-        <p>
-          Mi princesa hermosa, te quiero agradecer por todos los momentos
-          bonitos que hemos compartido juntos. Gracias por cada
-          sonrisa, cada conversación, cada abrazo, cada aventura
-          y por todas esas pequeñas cosas que, aunque quizás
-          parezcan simples, para mí significan muchísimo.
-        </p>
-        <p>
-          A tu lado he podido guardar recuerdos que siempre
-          llevaré conmigo. Hemos reído, hemos aprendido, hemos
-          pasado por momentos fáciles y otros no tanto, pero
-          cada uno de ellos ha hecho que nuestra historia sea especial.
-        </p>
-        <p>
-          Gracias por estar a mi lado, por tu cariño, por tu
-          paciencia y por hacer que tantos días sean mejores
-          simplemente con tu presencia. Me siento muy afortunado
-          de haber compartido tantos momentos contigo y espero
-          que todavía nos queden muchísimas experiencias por vivir,
-          lugares por conocer y recuerdos por crear.
-        </p>
-        <p>
-          Gracias por ser parte de mi vida, mi Alita. ❤️
-        </p>
-        <p>
-          No sé qué nos depare el futuro, pero sí sé que todos
-          los momentos que hemos vivido juntos tienen un lugar
-          muy especial en mi corazón.
-        </p>
-        <p>
-          Te quiero muchísimo y espero seguir escribiendo nuestra
-          historia junto a ti, hasta de viejitos seguir y, aun después
-          de la muerte, volvernos a encontrar y juntos volver a reír.
-          🧸💗✨
-        </p>
+        <p>Mi princesa hermosa, te quiero agradecer por todos los momentos bonitos que hemos compartido juntos. Gracias por cada sonrisa, cada conversación, cada abrazo, cada aventura y por todas esas pequeñas cosas que, aunque quizás parezcan simples, para mí significan muchísimo.</p>
+        <p>A tu lado he podido guardar recuerdos que siempre llevaré conmigo. Hemos reído, hemos aprendido, hemos pasado por momentos fáciles y otros no tanto, pero cada uno de ellos ha hecho que nuestra historia sea especial.</p>
+        <p>Gracias por estar a mi lado, por tu cariño, por tu paciencia y por hacer que tantos días sean mejores simplemente con tu presencia. Me siento muy afortunado de haber compartido tantos momentos contigo y espero que todavía nos queden muchísimas experiencias por vivir, lugares por conocer y recuerdos por crear.</p>
+        <p>Gracias por ser parte de mi vida, mi Alita. ❤️</p>
+        <p>No sé qué nos depare el futuro, pero sí sé que todos los momentos que hemos vivido juntos tienen un lugar muy especial en mi corazón.</p>
+        <p>Te quiero muchísimo y espero seguir escribiendo nuestra historia junto a ti, hasta de viejitos seguir y, aun después de la muerte, volvernos a encontrar y juntos volver a reír. 🧸💗✨</p>
       </div>
     </div>
   </div>
 
   <script>
-    /* ==========================================
-       GALAXIA Y CORAZÓN
-       ========================================== */
     const canvas = document.getElementById("galaxyCanvas");
     const ctx = canvas.getContext("2d");
-
     let width, height;
 
     function resizeCanvas() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     }
-
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
     const particles = [];
-    const particleCount = 700;
+    const particleCount = 600;
 
     function heartShape(t) {
       const x = 16 * Math.pow(Math.sin(t), 3);
@@ -329,14 +255,13 @@
         const t = Math.random() * Math.PI * 2;
         const pos = heartShape(t);
         
-        // Escalado dinámico para que entre perfecto en pantallas móviles pequeñas
-        const scale = Math.min(width, height) / 58;
+        // REDUCCIÓN Y ELEVACIÓN DEL CORAZÓN PARA CELULARES
+        const scale = Math.min(width, height) / 72; // Escala reducida considerablemente
 
         this.baseX = pos.x * scale + width / 2;
-        // Se sube ligeramente el centro para dejar espacio a los botones de abajo
-        this.baseY = pos.y * scale + height / 2 - 40;
+        this.baseY = pos.y * scale + height / 2 - 80; // Subido para dejar espacio amplio abajo
 
-        this.size = Math.random() * 1.6 + 1;
+        this.size = Math.random() * 1.5 + 1;
         this.color = `hsl(${Math.random() * 40 + 330}, 100%, ${Math.random() * 40 + 60}%)`;
         this.speed = Math.random() * 0.04 + 0.02;
       }
@@ -377,12 +302,8 @@
 
       requestAnimationFrame(animate);
     }
-
     animate();
 
-    /* ==========================================
-       MÚSICA ROMÁNTICA
-       ========================================== */
     let audioContext = null;
     let musicStarted = false;
 
@@ -395,20 +316,13 @@
       [349.23, 0.55], [329.63, 0.55], [261.63, 1.0]
     ];
 
-    const romanticBass = [
-      [130.81, 1.8], [146.83, 1.8], [174.61, 1.8],
-      [164.81, 1.8], [130.81, 1.8], [110.00, 1.8]
-    ];
-
     function playTone(frequency, duration, type, volume, when) {
       if (!audioContext) return;
-
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
 
       osc.type = type;
       osc.frequency.setValueAtTime(frequency, when);
-
       gain.gain.setValueAtTime(0.0001, when);
       gain.gain.exponentialRampToValueAtTime(volume, when + 0.08);
       gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
@@ -422,7 +336,6 @@
 
     function playRomanticPhrase() {
       if (!audioContext || !musicStarted) return;
-
       const now = audioContext.currentTime;
       let time = now + 0.03;
 
@@ -432,12 +345,6 @@
         time += duration;
       });
 
-      let bassTime = now + 0.03;
-      romanticBass.forEach(([note, duration]) => {
-        playTone(note, duration, "sine", 0.045, bassTime);
-        bassTime += duration;
-      });
-
       const phraseDuration = (time - now) * 1000;
       setTimeout(playRomanticPhrase, phraseDuration + 250);
     }
@@ -445,15 +352,8 @@
     async function startMusic() {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return false;
-
-      if (!audioContext) {
-        audioContext = new AudioCtx();
-      }
-
-      if (audioContext.state === "suspended") {
-        await audioContext.resume();
-      }
-
+      if (!audioContext) audioContext = new AudioCtx();
+      if (audioContext.state === "suspended") await audioContext.resume();
       if (musicStarted) return true;
 
       musicStarted = true;
@@ -463,13 +363,11 @@
 
     async function toggleMusic() {
       const musicBtn = document.getElementById("musicBtn");
-
       if (!audioContext) {
         const started = await startMusic();
         if (started) musicBtn.textContent = "🔊 Música";
         return;
       }
-
       if (audioContext.state === "running") {
         await audioContext.suspend();
         musicBtn.textContent = "🔇 Música";
@@ -479,9 +377,6 @@
       }
     }
 
-    /* ==========================================
-       INICIO
-       ========================================== */
     async function startGalaxy(e) {
       if (e) e.preventDefault();
       if (isStarted) return;
@@ -499,12 +394,8 @@
       }, 600);
     }
 
-    const startBtn = document.getElementById("startBtn");
-    startBtn.addEventListener("click", startGalaxy);
+    document.getElementById("startBtn").addEventListener("click", startGalaxy);
 
-    /* ==========================================
-       CARTA
-       ========================================== */
     function openModal() {
       document.getElementById("modalOverlay").classList.add("active");
     }
