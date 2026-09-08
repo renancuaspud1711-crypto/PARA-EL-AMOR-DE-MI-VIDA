@@ -85,22 +85,6 @@
       display: none;
     }
 
-    .audio-control {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 15;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      border-radius: 30px;
-      padding: 8px 16px;
-      font-size: 0.85rem;
-      display: none;
-      backdrop-filter: blur(5px);
-      cursor: pointer;
-    }
-
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -189,12 +173,8 @@
 </head>
 <body>
 
-  <!-- Audio directo por enlace CDN ultrarrápido y seguro -->
-  <audio id="bgMusic" loop playsinline preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-acoustic-guitar-112191.mp3" type="audio/mpeg">
-  </audio>
-
-  <button class="audio-control" id="audioToggleBtn" onclick="toggleAudio()">🎵 Música: On</button>
+  <!-- Elemento de audio con fallback a WebAudio sintetizado -->
+  <audio id="bgMusic" loop playsinline preload="auto" src="musica.mp3"></audio>
 
   <canvas id="galaxyCanvas"></canvas>
 
@@ -306,34 +286,84 @@
     }
     animate();
 
-    const audio = document.getElementById('bgMusic');
+    // Motor de audio garantizado (Sintetizador Romántico Nativo + HTML5 Audio)
+    let audioCtx = null;
+
+    function playMelodyNatively() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      
+      audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      // Notas románticas en frecuencia Hz (Melodía de piano suave)
+      const notes = [
+        261.63, 329.63, 392.00, 523.25, // Do, Mi, Sol, Do (C Mayor)
+        220.00, 261.63, 329.63, 440.00, // La, Do, Mi, La (A menor)
+        174.61, 220.00, 261.63, 349.23, // Fa, La, Do, Fa (F Mayor)
+        196.00, 246.94, 293.66, 392.00  // Sol, Si, Re, Sol (G Mayor)
+      ];
+
+      let noteIndex = 0;
+
+      function playNextNote() {
+        if (!audioCtx || audioCtx.state === 'closed') return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine'; // Tono suave de piano/acústico
+        osc.frequency.setValueAtTime(notes[noteIndex], audioCtx.currentTime);
+
+        // Curva de volumen suave (Fade In / Fade Out)
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.85);
+
+        noteIndex = (noteIndex + 1) % notes.length;
+        setTimeout(playNextNote, 400); // Ritmo fluido
+      }
+
+      playNextNote();
+    }
 
     function startGalaxy() {
       if (isStarted) return;
       isStarted = true;
 
-      // Reproducción inmediata con interacción directa
+      // 1. Intentar reproducir el archivo musica.mp3
+      const audio = document.getElementById('bgMusic');
+      let playedFile = false;
+
       if (audio) {
-        audio.play().catch(e => console.log("Audio block:", e));
+        audio.play().then(() => {
+          playedFile = true;
+        }).catch(err => {
+          console.log("El navegador bloqueó el archivo MP3, iniciando música integrada sintetizada...");
+          playMelodyNatively();
+        });
       }
+
+      // 2. Si no arranca en 300ms, forzar el motor nativo de respaldo
+      setTimeout(() => {
+        if (audio && audio.paused && !playedFile) {
+          playMelodyNatively();
+        }
+      }, 300);
 
       document.getElementById('startScreen').style.opacity = '0';
       setTimeout(() => {
         document.getElementById('startScreen').style.display = 'none';
         document.getElementById('letterBtn').style.display = 'block';
-        document.getElementById('audioToggleBtn').style.display = 'block';
       }, 600);
-    }
-
-    function toggleAudio() {
-      const btn = document.getElementById('audioToggleBtn');
-      if (audio.paused) {
-        audio.play();
-        btn.innerText = "🎵 Música: On";
-      } else {
-        audio.pause();
-        btn.innerText = "🔇 Música: Off";
-      }
     }
 
     const startBtn = document.getElementById('startBtn');
