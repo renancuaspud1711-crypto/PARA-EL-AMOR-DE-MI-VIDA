@@ -185,6 +185,13 @@
 </head>
 <body>
 
+  <!-- Reproductor configurado con el archivo exacto de tu repositorio -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="[FREE] Acoustic Guitar x Piano Type Beat.mp3" type="audio/mpeg">
+    <source src="[FREE] Acoustic Guitar x Piano Type Beat" type="audio/mpeg">
+    <source src="musica.mp3" type="audio/mpeg">
+  </audio>
+
   <canvas id="galaxyCanvas"></canvas>
 
   <div class="start-screen" id="startScreen" onclick="startGalaxy()">
@@ -201,7 +208,7 @@
       
       <div class="heart-header">
         <svg class="animated-heart" viewBox="0 0 32 32">
-          <path d="M16 28.5 C16 28.5 3 20.5 3 11.5 C3 6.5 7 3.5 11.5 3.5 C14.5 3.5 15.8 5 16 5 C16.2 5 17.5 3.5 20.5 3.5 C25 3.5 29 6.5 29 11.5 C29 20.5 16 28.5 16 28.5 Z" />
+          <path d="M16 28.5 C16 28.5 3 20.5 3 11.5 C3 6.5 7 3.5 11.5 C3 6.5 14.5 3.5 15.8 5 16 5 C16.2 5 17.5 3.5 20.5 3.5 C25 3.5 29 6.5 29 11.5 C29 20.5 16 28.5 16 28.5 Z" />
         </svg>
       </div>
 
@@ -292,47 +299,12 @@
     }
     animate();
 
-    // Motor de sonido sintético suave (Web Audio API)
-    let audioCtx;
-    function playMelody() {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 329.63, 293.66]; // C4, E4, G4, C5, A4, F4, E4, D4
-      let index = 0;
-
-      function playNote() {
-        if (!audioCtx) return;
-        
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(notes[index], audioCtx.currentTime);
-
-        gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 1.2);
-
-        index = (index + 1) % notes.length;
-        setTimeout(playNote, 600);
-      }
-
-      playNote();
-    }
-
     function startGalaxy() {
       isStarted = true;
       
-      // Inicia la música generada nativamente
-      try {
-        playMelody();
-      } catch (e) {
-        console.log("Audio error:", e);
+      const music = document.getElementById('bgMusic');
+      if (music) {
+        music.play().catch(e => console.log("Audio play error:", e));
       }
 
       document.getElementById('startScreen').style.opacity = '0';
