@@ -85,7 +85,6 @@
       display: none;
     }
 
-    /* Reproductor nativo estilizado para forzar la reproducción */
     .audio-wrapper {
       position: absolute;
       top: 15px;
@@ -193,12 +192,10 @@
 </head>
 <body>
 
-  <!-- Reproductor directo con controles habilitados para superar bloqueos -->
   <div class="audio-wrapper">
     <span style="font-size:0.8rem; color:#ffb7c5;">🎵 Música:</span>
     <audio id="bgMusic" controls loop playsinline preload="auto">
-      <source src="https://renancuaspud1711-crypto.github.io/PARA-EL-AMOR-DE-MI-VIDA/musica.mp3" type="audio/mpeg">
-      <source src="musica.mp3" type="audio/mpeg">
+      <source src="https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
     </audio>
   </div>
 
@@ -318,7 +315,7 @@
 
       const audio = document.getElementById('bgMusic');
       if (audio) {
-        audio.play().catch(e => console.log('Activa el reproductor arriba'));
+        audio.play().catch(e => console.log('Usa el reproductor superior'));
       }
 
       document.getElementById('startScreen').style.opacity = '0';
@@ -330,6 +327,7 @@
 
     const startBtn = document.getElementById('startBtn');
     startBtn.addEventListener('click', startGalaxy);
+    startBtn.addEventListener('touchstart', startGalaxy, { passive: true });
 
     function openModal() {
       document.getElementById('modalOverlay').classList.add('active');
