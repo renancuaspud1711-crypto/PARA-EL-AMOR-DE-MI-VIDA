@@ -69,7 +69,6 @@
       100% { transform: scale(1); }
     }
 
-    /* Botón flotante para la carta */
     .letter-icon-btn {
       position: absolute;
       bottom: 35px;
@@ -86,7 +85,6 @@
       display: none;
     }
 
-    /* Control de audio flotante para activar manualmente si el cel lo frena */
     .audio-control {
       position: absolute;
       top: 20px;
@@ -100,6 +98,7 @@
       font-size: 0.85rem;
       display: none;
       backdrop-filter: blur(5px);
+      cursor: pointer;
     }
 
     .modal-overlay {
@@ -190,6 +189,11 @@
 </head>
 <body>
 
+  <!-- Audio directo por enlace CDN ultrarrápido y seguro -->
+  <audio id="bgMusic" loop playsinline preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-acoustic-guitar-112191.mp3" type="audio/mpeg">
+  </audio>
+
   <button class="audio-control" id="audioToggleBtn" onclick="toggleAudio()">🎵 Música: On</button>
 
   <canvas id="galaxyCanvas"></canvas>
@@ -225,7 +229,6 @@
   </div>
 
   <script>
-    // Configuración del canvas de galaxia
     const canvas = document.getElementById('galaxyCanvas');
     const ctx = canvas.getContext('2d');
     let width, height;
@@ -303,26 +306,15 @@
     }
     animate();
 
-    // Sube tu archivo a memoria nativa para saltar las restricciones de Android / iOS
-    const audioPlayer = new Audio();
-    audioPlayer.src = "musica.mp3";
-    audioPlayer.loop = true;
-
-    // Respaldo inmediato por CDN en caso de que el celular rechace el MP3 local
-    const fallbackUrl = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-acoustic-guitar-112191.mp3";
+    const audio = document.getElementById('bgMusic');
 
     function startGalaxy() {
       if (isStarted) return;
       isStarted = true;
 
-      // Intentar reproducir audio con evento directo de usuario
-      let playPromise = audioPlayer.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log("Reintentando con fuente alternativa para móvil...");
-          audioPlayer.src = fallbackUrl;
-          audioPlayer.play().catch(e => console.log("Bloqueo estricto del navegador móvil"));
-        });
+      // Reproducción inmediata con interacción directa
+      if (audio) {
+        audio.play().catch(e => console.log("Audio block:", e));
       }
 
       document.getElementById('startScreen').style.opacity = '0';
@@ -335,11 +327,11 @@
 
     function toggleAudio() {
       const btn = document.getElementById('audioToggleBtn');
-      if (audioPlayer.paused) {
-        audioPlayer.play();
+      if (audio.paused) {
+        audio.play();
         btn.innerText = "🎵 Música: On";
       } else {
-        audioPlayer.pause();
+        audio.pause();
         btn.innerText = "🔇 Música: Off";
       }
     }
