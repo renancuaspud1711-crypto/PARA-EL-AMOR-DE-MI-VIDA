@@ -85,6 +85,26 @@
       display: none;
     }
 
+    /* Reproductor nativo estilizado para forzar la reproducción */
+    .audio-wrapper {
+      position: absolute;
+      top: 15px;
+      z-index: 30;
+      background: rgba(255, 77, 109, 0.2);
+      border: 1px solid rgba(255, 183, 197, 0.4);
+      padding: 6px 12px;
+      border-radius: 30px;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .audio-wrapper audio {
+      height: 30px;
+      max-width: 200px;
+    }
+
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -173,8 +193,14 @@
 </head>
 <body>
 
-  <!-- Elemento de audio con fallback a WebAudio sintetizado -->
-  <audio id="bgMusic" loop playsinline preload="auto" src="musica.mp3"></audio>
+  <!-- Reproductor directo con controles habilitados para superar bloqueos -->
+  <div class="audio-wrapper">
+    <span style="font-size:0.8rem; color:#ffb7c5;">🎵 Música:</span>
+    <audio id="bgMusic" controls loop playsinline preload="auto">
+      <source src="https://renancuaspud1711-crypto.github.io/PARA-EL-AMOR-DE-MI-VIDA/musica.mp3" type="audio/mpeg">
+      <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+  </div>
 
   <canvas id="galaxyCanvas"></canvas>
 
@@ -286,78 +312,14 @@
     }
     animate();
 
-    // Motor de audio garantizado (Sintetizador Romántico Nativo + HTML5 Audio)
-    let audioCtx = null;
-
-    function playMelodyNatively() {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      
-      audioCtx = new AudioContext();
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-
-      // Notas románticas en frecuencia Hz (Melodía de piano suave)
-      const notes = [
-        261.63, 329.63, 392.00, 523.25, // Do, Mi, Sol, Do (C Mayor)
-        220.00, 261.63, 329.63, 440.00, // La, Do, Mi, La (A menor)
-        174.61, 220.00, 261.63, 349.23, // Fa, La, Do, Fa (F Mayor)
-        196.00, 246.94, 293.66, 392.00  // Sol, Si, Re, Sol (G Mayor)
-      ];
-
-      let noteIndex = 0;
-
-      function playNextNote() {
-        if (!audioCtx || audioCtx.state === 'closed') return;
-
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine'; // Tono suave de piano/acústico
-        osc.frequency.setValueAtTime(notes[noteIndex], audioCtx.currentTime);
-
-        // Curva de volumen suave (Fade In / Fade Out)
-        gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.85);
-
-        noteIndex = (noteIndex + 1) % notes.length;
-        setTimeout(playNextNote, 400); // Ritmo fluido
-      }
-
-      playNextNote();
-    }
-
     function startGalaxy() {
       if (isStarted) return;
       isStarted = true;
 
-      // 1. Intentar reproducir el archivo musica.mp3
       const audio = document.getElementById('bgMusic');
-      let playedFile = false;
-
       if (audio) {
-        audio.play().then(() => {
-          playedFile = true;
-        }).catch(err => {
-          console.log("El navegador bloqueó el archivo MP3, iniciando música integrada sintetizada...");
-          playMelodyNatively();
-        });
+        audio.play().catch(e => console.log('Activa el reproductor arriba'));
       }
-
-      // 2. Si no arranca en 300ms, forzar el motor nativo de respaldo
-      setTimeout(() => {
-        if (audio && audio.paused && !playedFile) {
-          playMelodyNatively();
-        }
-      }, 300);
 
       document.getElementById('startScreen').style.opacity = '0';
       setTimeout(() => {
@@ -368,7 +330,6 @@
 
     const startBtn = document.getElementById('startBtn');
     startBtn.addEventListener('click', startGalaxy);
-    startBtn.addEventListener('touchstart', startGalaxy, { passive: true });
 
     function openModal() {
       document.getElementById('modalOverlay').classList.add('active');
